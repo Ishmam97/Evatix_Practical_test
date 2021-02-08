@@ -17,19 +17,28 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
 // buildexecuteCmd represents the buildexecute command
-var buildexecuteCmd = &cobra.Command{
+var (
+	copydir bool
+	source string
+	buildexecuteCmd = &cobra.Command{
 	Use:   "buildexecute",
 	Short: "build execute",
 	Long: `inside build execute command `,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("buildexecute called")
+		if copydir != false{
+			fmt.Println("inside buildexecute command :", args[0])
+			source = args[0]
+		}else{
+			source = "/"
+		}
 	},
-}
+	}
+	)
 
 func init() {
 	rootCmd.AddCommand(buildexecuteCmd)
@@ -43,4 +52,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// buildexecuteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	buildexecuteCmd.Flags().BoolVarP(&copydir, "copydir", "c", false, "-c [destination]")
 }
