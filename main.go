@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"sync"
 	"time"
 
@@ -61,18 +63,39 @@ func Csv(cliRunners *[]CliRunnerRecord) string {
 
 //stream function
 func (cliStreamerRecord CliStreamerRecord) Stream() {
-	fmt.Printf("%s -> %s\n", cliStreamerRecord.Title, cliStreamerRecord.Message1)
+	o := fmt.Sprintf("%s -> %s\n", cliStreamerRecord.Title, cliStreamerRecord.Message1)
+	fmt.Println(o)
+	go writeToFile("output", o)
 	//delay
 	time.Sleep(time.Duration(cliStreamerRecord.StreamDelay) * time.Second)
-	fmt.Printf("%s -> %s\n", cliStreamerRecord.Title, cliStreamerRecord.Message2)
-
+	o1 := fmt.Sprintf("%s -> %s\n", cliStreamerRecord.Title, cliStreamerRecord.Message2)
+	fmt.Println(o1)
+	go writeToFile("output", o1)
 }
 
+var mutex = sync.Mutex{}
+
+func writeToFile(file string, o string) {
+	mutex.Lock()
+	// Write to file
+	f, err := os.OpenFile("out.txt",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Println(err)
+	}
+	defer f.Close()
+	if _, err := f.WriteString(o); err != nil {
+		log.Println(err)
+	}
+	mutex.Unlock()
+
+}
 func main() {
 	args := "Run,Title,Message 1,Message 2,Stream Delay,Run Times\n2,CLI Invoke1,First helloo,Second Ishmam,3,2\n2,CLI Invoke2,yoooo,TSM,5,2\n3,CLI Invoke3,First Msg 1,Second Msg 2,2,150"
 	var cliRunners []CliRunnerRecord
 	// c := make(chan []string)
 	var wg sync.WaitGroup
+
 	gocsv.UnmarshalString(
 		args,
 		&cliRunners)
