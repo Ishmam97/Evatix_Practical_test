@@ -1,4 +1,4 @@
-module github.com/Ishmam97/Evatix_Practical_test
+module github.com/Ishmam97/Evatix_Practical_test/task1
 
 go 1.15
 
