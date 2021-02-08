@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "GoBuilderCLI/cmd"
+import "github.com/Ishmam97/Evatix_Practical_test/GoBuilderCLI/cmd"
 
 func main() {
 	cmd.Execute()
