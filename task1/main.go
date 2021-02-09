@@ -111,6 +111,7 @@ func main() {
 			wg.Done()
 		}(runner)
 	}
+	//wait
 	wg.Wait()
 
 }
