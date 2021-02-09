@@ -1,6 +1,11 @@
 package main
 
-import "regexp"
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"regexp"
+)
 
 type NginxBlock struct {
 	StartLine   string
@@ -17,7 +22,7 @@ type NginxBlock struct {
 
 func (ngBlock *NginxBlock) IsBlock(line string) bool {
 	// TODO Solve it using regex
-
+	return false
 }
 
 func (ngBlock *NginxBlock) IsLine(line string) bool {
@@ -28,6 +33,17 @@ func (ngBlock *NginxBlock) IsLine(line string) bool {
 
 func (ngBlock *NginxBlock) HasComment(line string) bool {
 	// TODO Solve it using regex
+	return false
+}
+
+func GetNginxBlock(
+	lines *[]*string,
+	startIndex,
+	endIndex,
+	recursionMax int,
+) *NginxBlock {
+	var b *NginxBlock
+	return b
 }
 
 type NginxBlocks struct {
@@ -37,15 +53,28 @@ type NginxBlocks struct {
 	AllLines *[]*string
 }
 
-func GetNginxBlock(
-	lines *[]*string,
-	startIndex,
-	endIndex,
-	recursionMax int,
-) *NginxBlock {
+func GetNginxBlocks(configContent string) *NginxBlocks {
+	var b NginxBlocks
+	var al = make([]*string, 0)
+	b.AllContents = configContent
+	var lineRegex string = `.*\n`
+	sent := regexp.MustCompile(lineRegex)
+	matches := sent.FindAllStringSubmatchIndex(configContent, -1)
+
+	for _, match := range matches {
+		for i := 0; i < len(match)-1; i += 2 {
+			al = append(al, &configContent[match[i]+match[i+1]])
+			fmt.Println("------")
+		}
+
+	}
+	return &b
 }
-
-func GetNginxBlocks(configContent string) *NginxBlocks {}
 func main() {
-
+	content, err := ioutil.ReadFile("nginx.conf")
+	if err != nil {
+		log.Fatal(err)
+	}
+	nbs := GetNginxBlocks(string(content))
+	fmt.Println(nbs)
 }
