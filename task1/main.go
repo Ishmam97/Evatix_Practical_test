@@ -105,7 +105,7 @@ func main() {
 	for _, runner := range cliRunners {
 		wg.Add(1)
 		go func(runner CliRunnerRecord) {
-			for i := 0; i < 10; i++ {
+			for i := 0; i < runner.RunTimes; i++ {
 				runner.CliStreamerRecord().Stream()
 			}
 			wg.Done()
