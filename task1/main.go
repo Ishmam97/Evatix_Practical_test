@@ -91,7 +91,7 @@ func writeToFile(file string, o string) {
 
 }
 func main() {
-	args := "Run,Title,Message 1,Message 2,Stream Delay,Run Times\n2,CLI Invoke1,First helloo,Second Ishmam,3,2\n2,CLI Invoke2,yoooo,TSM,5,2\n3,CLI Invoke3,First Msg 1,Second Msg 2,2,150"
+	args := "Run,Title,Message 1,Message 2,Stream Delay,Run Times\n2,CLI Invoke1,First helloo,Second Ishmam,3,2\n2,CLI Invoke2,yoooo,TSM,5,2\n3,CLI Invoke3,First run 10 times,Second Msg 2,2,10"
 	var cliRunners []CliRunnerRecord
 	// c := make(chan []string)
 	var wg sync.WaitGroup
