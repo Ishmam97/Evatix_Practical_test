@@ -17,28 +17,55 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+	"os/exec"
+	"strings"
+
 	"github.com/spf13/cobra"
 )
 
 // buildexecuteCmd represents the buildexecute command
 var (
-	copydir bool
-	source string
+	builddir        bool
+	copydir         bool
+	exe				bool
+	source          string
+	destination     string
 	buildexecuteCmd = &cobra.Command{
-	Use:   "buildexecute",
-	Short: "build execute",
-	Long: `inside build execute command `,
-	Args: cobra.MaximumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		if copydir != false{
-			fmt.Println("inside buildexecute command :", args[0])
-			source = args[0]
-		}else{
-			source = "/"
-		}
-	},
+		Use:   "buildexecute",
+		Short: "build execute",
+		Long:  `USE buildexecute [flags] [sourcefilename] [destinationDir] [fileToBuild]`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if copydir != true {
+				fmt.Println("Must use -c [path/to/file]")
+				os.Exit(1)
+
+			} else if builddir != true {
+				source = args[0]
+				_ = copyFile(source, source)
+			} else if exe!=true{
+				source = args[0]
+				destination = args[1]
+				_ = copyFile(source, destination)
+			}else{
+				source = args[0]
+				destination = args[1]
+				_ = copyFile(source, destination)
+				buildCmd:= fmt.Sprintf("go build %s" ,args[2])
+				cmd := exec.Command(buildCmd)
+
+				err := cmd.Run()
+
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
+		},
 	}
-	)
+)
 
 func init() {
 	rootCmd.AddCommand(buildexecuteCmd)
@@ -52,6 +79,26 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// buildexecuteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	buildexecuteCmd.Flags().BoolVarP(&exe, "exe", "e", false, "-e [fileToBuild]")
+	buildexecuteCmd.Flags().BoolVarP(&copydir, "copydir", "c", false, "-c [source]")
+	buildexecuteCmd.Flags().BoolVarP(&builddir, "builddir", "b", false, "-b [destination]")
 
-	buildexecuteCmd.Flags().BoolVarP(&copydir, "copydir", "c", false, "-c [destination]")
+}
+func copyFile(s string, d string) error {
+	input, err := ioutil.ReadFile(s)
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	filenameparse := strings.Split(d, "/")
+	filename := filenameparse[len(filenameparse)-1]
+	filename = strings.Split(filename, ".")[0] + "-copy." + strings.Split(filename, ".")[1]
+	filenameparse[len(filenameparse)-1] = filename
+	err = ioutil.WriteFile(strings.Join(filenameparse, "/"), input, 0666)
+	if err != nil {
+		fmt.Println("Error creating", d)
+		fmt.Println(err)
+		panic(err)
+	}
+	return err
 }
